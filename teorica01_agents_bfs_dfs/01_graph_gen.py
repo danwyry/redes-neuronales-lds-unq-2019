@@ -52,7 +52,7 @@ def build_game_graph():
         if not is_goal_node(node) and not is_loosing_node(node):
             for move in node_possible_moves(node):
                 adj_node = apply_move(node, move)
-                node_adjacents.append(adj_node)
+                node_adjacents.append((adj_node,move))
                 if adj_node not in node_list:
                     node_list.append(adj_node)
         nodes_edges.append(node_adjacents)
@@ -65,7 +65,7 @@ def build_game_graph():
 print("Time algo ad-hoc: " , timeit.timeit(build_game_graph,number=100))
 graph1 = build_game_graph()
 
-for n in graph1: print (n,graph1[n])
+# for n in graph1: print (n,graph1[n])
 
 def bfs(graph, initial, is_goal):
     visited = set()
@@ -77,9 +77,9 @@ def bfs(graph, initial, is_goal):
         adjacents = graph[node]
         for adj in adjacents:
             # if is_loosing_node(adj): continue
-            if adj not in visited:
-                stack.append( (adj, path + [adj]) )
-                visited.add(adj)
+            if adj[0] not in visited:
+                stack.append( (adj[0], path + [adj]) )
+                visited.add(adj[0])
     return None
 
 def dfs(graph, initial, is_goal):
@@ -92,9 +92,9 @@ def dfs(graph, initial, is_goal):
         adjacents = graph[node]
         for adj in adjacents:
             # if is_loosing_node(adj): continue
-            if adj not in visited:
-                queue.append( (adj, path + [adj]) )
-                visited.add(adj)
+            if adj[0] not in visited:
+                queue.append( (adj[0], path + [adj]) )
+                visited.add(adj[0])
     return None
 
 def test1():
@@ -105,8 +105,35 @@ def test2():
     global graph1
     _ = dfs(graph1, (15, 0), is_goal_node)
 
+labels = { 1: "Farmer", 2: "Wolf",  4: "Goat", 8: "Cabbage" }
+
+def labels_inside(A):
+    lbls = []
+    for a in labels.keys():
+        if a & A == a: lbls.append(labels[a])
+    return ", ".join(lbls)
+
+def pretty_node(node):
+    A,B = node
+    return (labels_inside(A),labels_inside(B))
+
 print("Time algo BFS: " , timeit.timeit(test1,number=10000))
 print("Time algo DFS: " , timeit.timeit(test2,number=10000))
 
-print ("BFS: ", bfs(graph1, (15, 0), is_goal_node))
-print ("DFS: ", dfs(graph1, (15, 0), is_goal_node))
+def pretty_transition(t):
+    c,s = t
+    return "%s %s" % (labels[c] if c > 0 else "Farmer alone", "->" if s == 1 else "<-")
+
+def print_result(result):
+    node, path = result
+    i = 1
+    print("%s) %s" % (i,pretty_node((15,0))))
+    for d in path:
+        n,t = d
+        i+=1
+        print( "%s) %s : %s" % (i, pretty_transition(t),pretty_node(n)) )
+
+print(len(graph1.keys()))
+
+# print_result(bfs(graph1, (15, 0), is_goal_node))
+# print_result(dfs(graph1, (15, 0), is_goal_node))
