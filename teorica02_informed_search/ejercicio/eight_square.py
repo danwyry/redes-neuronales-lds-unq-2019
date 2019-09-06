@@ -4,9 +4,10 @@ class EightSquare:
         self._strategy = strategy
 
     def __getitem__(self, item):
-        if item not in self._graph.keys():
-            self._graph[item] = self._strategy.neighbours(item)
-        return self._graph[item]
+        key = str(item)
+        if key not in self._graph.keys():
+            self._graph[key] = self._strategy.neighbours(item)
+        return self._graph[key]
 
     def sum_manhattan_distances(self):
         return self._strategy.sum_manhattan_distances
@@ -46,9 +47,8 @@ class LinearESStrategy(ESStrategy):
 class ArrayStrategy(LinearESStrategy):
     @staticmethod
     def neighbours(node):
-        node = list(node)
-        moves = dict()
         pos = node.index(0)
+        moves = dict()
         for label in ArrayStrategy.MOVES:
             move,is_valid_move = ArrayStrategy.MOVES[label]
             if is_valid_move(pos):
@@ -62,13 +62,12 @@ class ArrayStrategy(LinearESStrategy):
 
     @staticmethod
     def num_wrong_numbers(node):
-        node = list(node)
         i = 0
         s = 0
         while i < 9:
             c = node[i]
             s += 1 \
-                if c== '0' and c != 8 or int(c) > 0 and c != i + 1 \
+                if c== 0 and c != 8 or c > 0 and c != i + 1 \
                 else 0
             i += 1
         return s

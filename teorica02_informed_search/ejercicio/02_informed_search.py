@@ -12,9 +12,9 @@ print(gs1)
 gs2 = gs(game, initial, game.sum_manhattan_distances())
 print(gs2)
 
-# print ("ARRAYS --------")
-# initial = [8,2,5,3,1,0,4,6,7]
-# StringStrategy.print_node(initial)
-# game = EightSquare(ArrayStrategy)
-# print(gs(game,str(initial), game.num_wrong_numbers()))
-# print(gs(game,str(initial), game.sum_manhattan_distances()))
+print ("ARRAYS --------")
+initial = [8,2,5,3,1,0,4,6,7]
+StringStrategy.print_node(initial)
+game = EightSquare(ArrayStrategy)
+print(gs(game,initial, game.num_wrong_numbers()))
+print(gs(game,initial, game.sum_manhattan_distances()))
