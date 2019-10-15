@@ -2,13 +2,13 @@
 PLAYER = int
 POS = int  # from 1 to 16
 MOVE = (POS, POS)
-CELL = int  # 1 , -1 , None
+CELL = int  # 1 , -1 , 0
 BOARD = [[CELL]]
 
 class Quixo:
     P1 =  1
     P2 = -1
-    Neutral = None
+    Neutral = 0
     POS_COL = 0
     POS_ROW = 1
     positions_map = {
@@ -20,7 +20,7 @@ class Quixo:
     }
 
     @staticmethod
-    def build_board():
+    def build_board() -> BOARD:
         return [
             [Quixo.Neutral for col in range(5)]
             for row in range(5)
@@ -32,14 +32,14 @@ class Quixo:
 
     @staticmethod
     def same_row(orig: POS, dest: POS) -> bool:
-        return Quixo.positions_map[Quixo.POS_ROW][orig] == Quixo.positions_map[Quixo.POS_ROW][dest]
+        return Quixo.positions_map[orig][Quixo.POS_ROW] == Quixo.positions_map[dest][Quixo.POS_ROW]
 
     @staticmethod
-    def is_corner(pos: POS):
+    def is_corner(pos: POS) -> bool:
         return pos == 1 or pos == 5 or pos == 9 or pos == 13
 
     @staticmethod
-    def is_valid_move(board: BOARD, move: MOVE, player: PLAYER) -> bool:
+    def is_valid_move(board: BOARD, player: PLAYER, move: MOVE) -> bool:
         orig, dest = move
         col,row = Quixo.positions_map[orig]
         return orig > 0 and orig < 21 and \
@@ -54,7 +54,7 @@ class Quixo:
         return [move for move in range(1, 17) if Quixo.is_valid_move(board, player, move)]
 
     @staticmethod
-    def play(board: BOARD, move: MOVE, player: PLAYER):
+    def play(board: BOARD, player: PLAYER, move: MOVE):
         orig, dest = move
         if not Quixo.is_valid_move(board, player, move):
             raise InvalidMoveError("Ivalid move from %s to %s, for player %s"
