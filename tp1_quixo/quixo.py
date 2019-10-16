@@ -1,11 +1,11 @@
-# Types
+# TYPES
 Player = int
-Pos = int  # from 1 to 16
+Pos = int           # 1 .. 16
 Move = (Pos, Pos)
-Cell = int  # 1 , -1 , 0
+Cell = int          # 1/-1/0
 Board = [[Cell]]
 
-# Constants
+# CONSTANTS
 PLAYER1 = 1
 PLAYER2 = -1
 NEUTRAL = 0
@@ -15,26 +15,30 @@ POSITIONS_MAP = {  # (col,row)
     1: (0, 0), 2: (1, 0), 3: (2, 0), 4: (3, 0),
     5: (4, 0), 6: (4, 1), 7: (4, 2), 8: (4, 3),
     9: (4, 4), 10: (3, 4), 11: (2, 4), 12: (1, 4),
-    13: (0, 4), 14: (0, 3), 15: (0, 2), 16: (0, 1)
-}
+    13: (0, 4), 14: (0, 3), 15: (0, 2), 16: (0, 1) }
 
 def build_board() -> Board:
-    return [
-        [NEUTRAL for col in range(5)]
-        for row in range(5)
-    ]
+    return [ [NEUTRAL for col in range(5)]
+                for row in range(5) ]
 
-def is_corner(pos: Pos) -> bool:
-    return pos == 1 or pos == 5 or pos == 9 or pos == 13
+def play(board: Board, player: Player, move: Move):
+    orig, dest = move
+    col_orig, row_orig = POSITIONS_MAP[orig]
+    col_dest, row_dest = POSITIONS_MAP[dest]
+    if col_orig == col_dest:
+        shift_col(board, player, col_orig, row_orig, row_dest)
+    else:
+        shift_row(board, player, row_orig, col_orig, col_dest)
 
-def is_opossite(a: int,b: int) -> bool:
-    return a == 0 and b == 4 or a == 4 and b == 0
-
-def is_opossite_possition(pos1: Pos, pos2: Pos):
-    col1, row1 = POSITIONS_MAP[pos1]
-    col2, row2 = POSITIONS_MAP[pos2]
-    return row1 == row2 and ((col1 == 0 and col2 == 4) or (col1 == 4 and col2 == 0)) or \
-            col1 == col2 and ((row1 == 0 and row2 == 4) or (row1 == 4 and row2 == 0))
+def valid_moves_player(board: Board, player: Player) -> [Move]:
+    moves = []
+    for orig in range(1, 17):
+        col, row = POSITIONS_MAP[orig]
+        if board[row][col] == -player:
+            continue
+        moves.extend([ (orig,dest) for dest in range(1, 17)
+                if is_valid_move(board, player, (orig,dest)) ])
+    return moves
 
 def is_valid_move(board: Board, player: Player, move: Move) -> bool:
     orig, dest = move
@@ -49,27 +53,14 @@ def is_valid_move(board: Board, player: Player, move: Move) -> bool:
                     ( not is_corner(dest) and is_opossite_possition(orig,dest) )
             ))
 
-def valid_moves_player(board: Board, player: Player) -> [Move]:
-    moves = []
-    for orig in range(1, 17):
-        col, row = POSITIONS_MAP[orig]
-        if board[row][col] == -player:
-            continue
-        moves.extend([ (orig,dest) for dest in range(1, 17)
-                if is_valid_move(board, player, (orig,dest)) ])
-    return moves
+def is_corner(pos: Pos) -> bool:
+    return pos == 1 or pos == 5 or pos == 9 or pos == 13
 
-def play(board: Board, player: Player, move: Move):
-    orig, dest = move
-    if not is_valid_move(board, player, move):
-        raise InvalidMoveError("Ivalid move from %s to %s, for player %s"
-                               % (orig, dest, player_simbol(player)))
-    col_orig, row_orig = POSITIONS_MAP[orig]
-    col_dest, row_dest = POSITIONS_MAP[dest]
-    if col_orig == col_dest:
-        shift_col(board, player, col_orig, row_orig, row_dest)
-    else:
-        shift_row(board, player, row_orig, col_orig, col_dest)
+def is_opossite_possition(pos1: Pos, pos2: Pos):
+    col1, row1 = POSITIONS_MAP[pos1]
+    col2, row2 = POSITIONS_MAP[pos2]
+    return row1 == row2 and ((col1 == 0 and col2 == 4) or (col1 == 4 and col2 == 0)) or \
+            col1 == col2 and ((row1 == 0 and row2 == 4) or (row1 == 4 and row2 == 0))
 
 def shift_row(board: Board, player: Player, row: int, orig: Pos, dest: Pos):
     sense = 1 if orig < dest else -1
@@ -108,11 +99,17 @@ class Quixo:
         return valid_moves_player(self.board, self.current_player)
 
     def playerPlay(self, move: Move):
-        self.current_player = PLAYER1
-        return play(self.board, self.current_player, move)
+        return play(PLAYER1, move)
 
     def oponentPlay(self, move: Move):
-        self.current_player = PLAYER2
+        return self.play(PLAYER2, move)
+
+    def play(self, player: Player, move: Move):
+        self.current_player = player
+        orig,dest = move
+        if not is_valid_move(self.board, self.current_player, move):
+            raise InvalidMoveError("Ivalid move from %s to %s, for player %s"
+                                   % (orig, dest, player_simbol(self.current_player)))
         return play(self.board, self.current_player, move)
 
 class QuixoError(Exception):
@@ -124,15 +121,20 @@ class DrawGameError(QuixoError):
 class InvalidMoveError(QuixoError):
     pass
 
-    #  0  1  2  3  4
-    #  -  -  -  -  -  0
-    #  -  -  -  -  -  1
-    #  -  -  -  -  -  2
-    #  -  -  -  -  -  3
-    #  -  -  -  -  -  4
+class QuixoHeuristic(Quixo):
+    def evaluate(self) -> int:
+        return 0
 
-    #  0  1  2  3  4
-    #  .  .  .  .  .
+
+    # 0  1  2  3  4
+    # -  -  -  -  -  0
+    # -  -  -  -  -  1
+    # -  -  -  -  -  2
+    # -  -  -  -  -  3
+    # -  -  -  -  -  4
+
+    # 0  1  2  3  4
+    # .  .  .  .  .
     #  1  2  3  4  5  . 0
     # 16           6  . 1
     # 15           7  . 2
