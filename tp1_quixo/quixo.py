@@ -22,11 +22,9 @@ def build_board() -> Board:
                 for row in range(5) ]
 
 def game_over(board: Board) -> bool:
-    if lookup_winning_row(board):
-        return True
-    if lookup_winning_col(board):
-        return True
-    return any_winning_diagonal(board)
+    return True \
+        if lookup_winning_row(board) or lookup_winning_col(board) or any_winning_diagonal(board) \
+        else False
 
 def play(board: Board, player: Player, move: Move):
     orig, dest = move
