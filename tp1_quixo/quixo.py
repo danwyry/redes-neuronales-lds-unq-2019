@@ -21,6 +21,13 @@ def build_board() -> Board:
     return [ [NEUTRAL for col in range(5)]
                 for row in range(5) ]
 
+def game_over(board: Board) -> bool:
+    if lookup_winning_row(board):
+        return True
+    if lookup_winning_col(board):
+        return True
+    return any_winning_diagonal(board)
+
 def play(board: Board, player: Player, move: Move):
     orig, dest = move
     col_orig, row_orig = POSITIONS_MAP[orig]
@@ -89,6 +96,44 @@ def print_board(board: Board):
         for cell in row:
             prow = prow + cell_simbol(cell) + " | "
         print(prow)
+
+def lookup_winning_row(board: Board):
+    for r in range(5):
+        is_winning_row = True
+        row = board[r]
+        player = row[0]
+        if player != NEUTRAL:
+            for cell in row:
+                if cell != player:
+                    is_winning_row = False
+                    break
+            if is_winning_row:
+                return (r, player)
+    return None
+
+def lookup_winning_col(board: Board):
+    for col in range(5):
+        player = board[0][col]
+        won = True
+        if player != NEUTRAL:
+            for row in range(5):
+                if board[row][col] != player:
+                    won = False
+                    break
+            if won:
+                return (col,player)
+    return None
+
+def any_winning_diagonal(board: Board):
+    cell1 = board[0][0]
+    cell2 = board[4][0]
+    return (
+        cell1 != NEUTRAL and (
+            board[1][1] == cell1 and board[2][2] == cell1 and
+            board[3][3] == cell1 and board[4][4] == cell1 )) or \
+       cell2 != NEUTRAL and (
+            board[3][1] == cell2 and board[2][2] == cell2 and
+            board[1][3] == cell2 and board[0][4] == cell2 )
 
 class Quixo:
     def __init__(self):

@@ -1,5 +1,9 @@
 import unittest
-from tp1_quixo.quixo import build_board, is_opossite_possition, NEUTRAL, is_corner, is_valid_move, PLAYER1, PLAYER2, play
+from copy import deepcopy
+
+from tp1_quixo.quixo import build_board, is_opossite_possition, NEUTRAL, is_corner, is_valid_move, PLAYER1, PLAYER2, \
+    play, game_over, lookup_winning_row, lookup_winning_col, print_board, any_winning_diagonal
+
 
 class TestQuixo(unittest.TestCase):
 
@@ -115,6 +119,72 @@ class TestQuixo(unittest.TestCase):
         self.assertFalse(is_valid_move(board, player, (2, 4)))
         self.assertFalse(is_valid_move(board, player, (6, 13)))
 
+    def test_any_winning_diagonal(self):
+        board1 = build_board()
+        board1[0][0] = PLAYER1
+        board1[1][1] = PLAYER1
+        board1[2][2] = PLAYER1
+        board1[3][3] = PLAYER1
+        board1[4][4] = PLAYER1
+        print_board(board1)
+        self.assertTrue(any_winning_diagonal(board1))
+
+        board2 = build_board()
+        board2[4][0] = PLAYER1
+        board2[3][1] = PLAYER1
+        board2[2][2] = PLAYER1
+        board2[1][3] = PLAYER1
+        board2[0][4] = PLAYER1
+        print_board(board2)
+        self.assertTrue(any_winning_diagonal(board2))
+
+
+    def test_lookup_winning_row(self):
+        board = build_board()
+        complete_row = [PLAYER1,PLAYER1,PLAYER1,PLAYER1,PLAYER1]
+        for i in range(5):
+            boardcopy = deepcopy(board)
+            boardcopy[i] = complete_row
+            print_board(boardcopy)
+            self.assertEqual(lookup_winning_row(boardcopy), (i,PLAYER1))
+
+    def test_lookup_winning_col(self):
+        board = build_board()
+        for col in range(5):
+            boardcopy = deepcopy(board)
+            for row in range(5):
+                boardcopy[row][col] = PLAYER1
+            print(lookup_winning_col(boardcopy))
+            print_board(boardcopy)
+            self.assertEqual(lookup_winning_col(boardcopy), (col,PLAYER1))
+
+    def test_not_lookup_winning_col(self):
+        board = build_board()
+        player = PLAYER1
+        for col in range(5):
+            boardcopy = deepcopy(board)
+            for row in range(5):
+                player = -player
+                boardcopy[row][col] = player
+            print(lookup_winning_col(boardcopy))
+            print_board(boardcopy)
+            self.assertIsNone(lookup_winning_col(boardcopy))
+
+    def test_not_lookup_winning_row(self):
+        board = build_board()
+        non_winning_rows = [
+            [NEUTRAL,PLAYER1,PLAYER1,PLAYER1,PLAYER1],
+            [PLAYER1,NEUTRAL,PLAYER1,PLAYER1,PLAYER1],
+            [PLAYER1,PLAYER1,NEUTRAL,PLAYER1,PLAYER1],
+            [PLAYER1,PLAYER1,PLAYER1,NEUTRAL,PLAYER1],
+            [NEUTRAL,PLAYER1,PLAYER1,PLAYER1,PLAYER1]
+        ]
+        for row in range(5):
+            boardcopy = deepcopy(board)
+            boardcopy[row]= non_winning_rows[row]
+            print(lookup_winning_col(boardcopy))
+            print_board(boardcopy)
+            self.assertIsNone(lookup_winning_row(boardcopy))
 
 
 
