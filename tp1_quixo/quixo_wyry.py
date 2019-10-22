@@ -163,7 +163,7 @@ def alphabeta(game, depth, player, alpha, beta, h) -> (int, Move):
         valid_moves = valid_moves_player(game.board,PLAYER1)
         for move in valid_moves:
             game_copy = deepcopy(game)
-            game_copy.play(PLAYER1, move)
+            game_copy._play(PLAYER1, move)
             ab_value, ab_move = alphabeta(game_copy, depth-1, PLAYER2, alpha, beta,h)
             if ab_value > player_best_value:
                 player_best_value = ab_value
@@ -178,7 +178,7 @@ def alphabeta(game, depth, player, alpha, beta, h) -> (int, Move):
         valid_moves = valid_moves_player(game.board,PLAYER2)
         for move in valid_moves:
             game_copy = deepcopy(game)
-            game_copy.play(PLAYER2, move)
+            game_copy._play(PLAYER2, move)
             ab_value, ab_move = alphabeta(game_copy, depth-1, PLAYER1, alpha, beta, h)
             if ab_value < player_worst_value:
                 player_worst_value = ab_value
@@ -204,7 +204,7 @@ class Quixo:
     def game_over(self) -> int:
         return game_over(self.board)
 
-    def play(self, player: Player, move: Move):
+    def _play(self, player: Player, move: Move):
         over = self.game_over()
         if over != NEUTRAL:
             raise GameOverException("Game is over. Winner is %s" % over)
@@ -224,11 +224,11 @@ class QuixoPlayerWyry(Quixo):
 
     def playerPlay(self) -> Move:
         _,move = alphabeta(self, self.depth, PLAYER1, -math.inf, math.inf, self.h)
-        self.play(PLAYER1,move)
+        self._play(PLAYER1,move)
         return move
 
     def oponentPlay(self, move: Move):
-        self.play(PLAYER2, move)
+        self._play(PLAYER2, move)
 
 # EXCEPTIONS
 ############
