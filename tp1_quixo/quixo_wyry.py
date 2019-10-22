@@ -1,4 +1,3 @@
-import timeit
 from copy import deepcopy
 
 import math
