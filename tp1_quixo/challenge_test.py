@@ -1,7 +1,7 @@
 import random
 
 from tp1_quixo.quixo_wyry import QuixoPlayerWyry, h_potentially_improving_lines, Quixo, PLAYER1, PLAYER2, \
-    valid_moves_player, Move, print_board, NEUTRAL, h_potentially_improving_lines_overdosed
+    valid_moves_player, Move, print_board, NEUTRAL, h_potentially_improving_lines_overdosed as h_dan
 
 
 class IdiotPlayer(QuixoPlayerWyry):
@@ -12,11 +12,11 @@ class IdiotPlayer(QuixoPlayerWyry):
         move = random.choice(
             valid_moves_player(self.board,PLAYER1)
         )
-        self.play(PLAYER1,move)
+        self._play(PLAYER1,move)
         return move
 
-player1 = QuixoPlayerWyry(h_potentially_improving_lines_overdosed,3)
-# player2 = QuixoPlayerWyry(h_potentially_improving_lines_overdosed,3)
+player1 = QuixoPlayerWyry(h_dan,3)
+# player2 = QuixoPlayerWyry(h_dan,3)
 player2 = IdiotPlayer()
 game = Quixo()
 player = PLAYER1
@@ -28,12 +28,12 @@ while game.game_over() == NEUTRAL:
         move = player1.playerPlay()
         print(move)
         player2.oponentPlay(move)
-        game.play(PLAYER1, move)
+        game._play(PLAYER1, move)
     else:
         move = player2.playerPlay()
         # print(move)
         player1.oponentPlay(move)
-        game.play(PLAYER2, move)
+        game._play(PLAYER2, move)
 
     player = player * -1
     # print("Player1 board")
