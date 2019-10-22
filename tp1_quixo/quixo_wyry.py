@@ -189,6 +189,16 @@ def alphabeta(game, depth, player, alpha, beta, h) -> (int, Move):
         return player_worst_value, player_worst_move
 
 # TODO: ITERATIVE DEEPENING
+def iterative_deep_alphabeta(game, max_depth, player, alpha, beta, h) -> (int, Move):
+    best_value, best_move = alphabeta(game, 1, player, alpha, beta, h)
+    for depth in range(2,max_depth):
+        value, move = alphabeta(game, 1, player, alpha, beta, h)
+        if best_value < value:
+            best_value = value
+            best_move = move
+        else : break
+
+    return best_value, best_move
 
 
 
@@ -223,7 +233,8 @@ class QuixoPlayerWyry(Quixo):
         super().__init__()
 
     def playerPlay(self) -> Move:
-        _,move = alphabeta(self, self.depth, PLAYER1, -math.inf, math.inf, self.h)
+        _,move = iterative_deep_alphabeta(self, self.depth, PLAYER1, -math.inf, math.inf, self.h)
+        # _,move = alphabeta(self, self.depth, PLAYER1, -math.inf, math.inf, self.h)
         self._play(PLAYER1,move)
         return move
 
