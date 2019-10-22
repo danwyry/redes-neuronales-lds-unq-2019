@@ -2,7 +2,7 @@ import unittest
 from copy import deepcopy
 
 from tp1_quixo.quixo import build_board, is_opossite_possition, NEUTRAL, is_corner, is_valid_move, PLAYER1, PLAYER2, \
-    play, game_over, lookup_winning_row, lookup_winning_col, print_board, any_winning_diagonal
+    play, lookup_winning_row, lookup_winning_col, print_board, any_winning_diagonal
 
 
 class TestQuixo(unittest.TestCase):
@@ -185,12 +185,3 @@ class TestQuixo(unittest.TestCase):
             print(lookup_winning_col(boardcopy))
             print_board(boardcopy)
             self.assertIsNone(lookup_winning_row(boardcopy))
-
-
-
-    #  1  2  3  4  5
-    # 16           6
-    # 15           7
-    # 14           8
-    # 13 12 11 10  9
-

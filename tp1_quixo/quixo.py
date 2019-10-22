@@ -164,22 +164,3 @@ class DrawGameError(QuixoError):
 class InvalidMoveError(QuixoError):
     pass
 
-class QuixoHeuristic(Quixo):
-    def evaluate(self) -> int:
-        return 0
-
-
-    # 0  1  2  3  4
-    # -  -  -  -  -  0
-    # -  -  -  -  -  1
-    # -  -  -  -  -  2
-    # -  -  -  -  -  3
-    # -  -  -  -  -  4
-
-    # 0  1  2  3  4
-    # .  .  .  .  .
-    #  1  2  3  4  5  . 0
-    # 16           6  . 1
-    # 15           7  . 2
-    # 14           8  . 3
-    # 13 12 11 10  9  . 4
